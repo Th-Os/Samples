@@ -4,13 +4,15 @@ Server = (function (port) {
     var server = require('http').Server(app);
     var express = require('express');
     var app = express();
-    var hello = require("./hello.js");
+    var DB = require("./db");
 
     app.use(express.static(__dirname + "/../client"));
 
     server.listen(port, () => {
         console.log("Running on port", port);
     });
+    
+    new DB();
     
 
     
