@@ -1,18 +1,21 @@
 var Server = Server || {};
 Server = (function (port) {
 
-    var server = require('http').Server(app);
+    
+    var path = require('path');
     var express = require('express');
     var app = express();
+    var server = require('http').Server(app);
     var DB = require("./db");
 
-    app.use(express.static(__dirname + "/../client"));
+    app.use(express.static(path.join(__dirname, "../client")));
+    console.log(path.join(__dirname, "../client"));
 
     server.listen(port, () => {
         console.log("Running on port", port);
     });
     
-    new DB();
+    // new DB();
     
 
     
