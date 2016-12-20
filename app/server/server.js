@@ -14,7 +14,7 @@ Server = (function (port) {
         console.log("Running on port", port);
     });
     
-    // new DB();
+    new DB();
     
 
     
