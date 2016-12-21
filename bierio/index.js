@@ -4,14 +4,30 @@ var express = require("express");
 
 var app = express();
 
-app.get("/kitten", function(req, res) {
+app.get("/api/beer", function(req, res) {
     console.log("Connected; " + database.isConnected());
-    var kitten = database.getAllKitten().then(function(kitten) {
-        res.json(kitten);
+    /*var beers = database.getAllBeers().then(function(beers) {
+        res.json(beers);
     }).catch(function(err) {
         console.log("There was an error!");
         res.sendStatus(500);
-    })
+    });*/
+});
+
+app.get("/api/beer/{id}", function(req, res) {
+
+});
+
+app.post("/api/beer", function(req, res) {
+
+});
+
+app.post("/api/beer/{id}/tag", function(req, res) {
+
+});
+
+app.delete("/api/beer/{id}", function(req, res) {
+
 });
 
 database.init(config);
