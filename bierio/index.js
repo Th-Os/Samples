@@ -9,16 +9,27 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 app.get("/api/beer", function(req, res) {
-    if(req.query == {}) {
-      database.getAllBeers().then(function(beers) {
-          res.json(beers);
+    if(isEmpty(req.query)) {
+      database.get({type: "all", object: {}}).then(function(beers) {
+          if(beers.length === 0) {
+            res.status(500).json({response: "no objects found",
+                      query: req.query});
+          }else {
+            res.status(200).json(beers);
+          }
       }).catch(function(err) {
           console.log(err);
           res.sendStatus(500);
       });
     }else {
-      database.getBeerByQuery(req.query).then(function(beers) {
-        res.json(beers);
+      database.get({type: "query", object: req.query}).then(function(beers) {
+        if(beers.length === 0) {
+          res.status(400).json({response: "no beer found.",
+                    query: req.query});
+        }else {
+          res.status(200).json(beers);
+        }
+
       }).catch(function(err) {
         console.log(err);
         res.sendStatus(500);
@@ -27,11 +38,11 @@ app.get("/api/beer", function(req, res) {
 });
 
 app.get("/api/beer/:id", function(req, res) {
-    database.getBeerById(req.params.id).then(function(beer) {
+    database.get({type: "id", object: req.params.id}).then(function(beer) {
       if(beer.length > 0) {
-        res.json(beer);
+        res.status(200).json(beer);
       }else {
-        res.send({response: "No item was found.", id: req.params.id});
+        res.status(400).json({response: "No item was found.", id: req.params.id});
       }
     }).catch(function(err) {
       console.log(err);
@@ -41,8 +52,8 @@ app.get("/api/beer/:id", function(req, res) {
 });
 
 app.post("/api/beer", function(req, res) {
-    database.addBeer(req.body).then(function(beer) {
-      res.json(beer);
+    database.get({type: "add", object: req.body}).then(function(beer) {
+      res.status(200).json(beer);
     }).catch(function(err) {
       console.log(err);
       res.sendStatus(500);
@@ -51,8 +62,8 @@ app.post("/api/beer", function(req, res) {
 });
 
 app.post("/api/beer/:id/:tag", function(req, res) {
-    database.addTagToBeer(req.params.id, req.params.tag).then(function(beer) {
-      res.send({
+    database.get({type: "addTag", object: {id: req.params.id, tag: req.params.tag}}).then(function(beer) {
+      res.status(200).send({
         response: "Beer successfully updated",
         tag: req.params.tag
       });
@@ -63,11 +74,11 @@ app.post("/api/beer/:id/:tag", function(req, res) {
 });
 
 app.delete("/api/beer/:id", function(req, res) {
-    database.deleteBeerById(req.params.id).then(function(beer) {
+    database.get({type: "delete", object: req.params.id}).then(function(beer) {
       if(beer == null) {
-        res.send({response: "Beer was removed before."});
+        res.status(400).send({response: "Beer was removed before."});
       }else {
-        res.send({
+        res.status(200).send({
           response: "Beer successfully deleted",
           id: req.params.id
         });
@@ -77,6 +88,14 @@ app.delete("/api/beer/:id", function(req, res) {
       res.sendStatus(500);
     });
 });
+
+function isEmpty(obj) {
+  for(var key in obj) {
+        if(obj.hasOwnProperty(key))
+            return false;
+    }
+    return true;
+}
 
 database.init(config);
 database.connect().then(function() {

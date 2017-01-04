@@ -15,7 +15,7 @@ module.exports = (function() {
         var beerSchema = mongoose.Schema({
             name: String,
             manufacturer: String,
-            age: Number,
+            age: Date,
             city: String,
             tag: []
         });
@@ -39,6 +39,23 @@ module.exports = (function() {
                 resolve();
             });
         });
+    }
+
+    function get(query) {
+      switch(query.type) {
+        case "all":
+          return getAllBeers(query.object);
+        case "id":
+          return getBeerById(query.object);
+        case "query":
+          return getBeerByQuery(query.object);
+        case "add":
+          return addBeer(query.object);
+        case "addTag":
+          return addTagToBeer(query.object);
+        case "delete":
+          return deleteBeerById(query.object);
+      }
     }
 
     function getAllBeers(queryObject) {
@@ -105,9 +122,9 @@ module.exports = (function() {
 
     }
 
-    function addTagToBeer(id, tag) {
+    function addTagToBeer(object) {
       return new Promise(function(resolve, reject) {
-          Beers.update({_id: id}, {$push: {tag: tag}}, function(err, beer) {
+          Beers.update({_id: object.id}, {$push: {tag: object.tag}}, function(err, beer) {
               if(err) {
                   reject(err);
               } else {
@@ -135,12 +152,7 @@ module.exports = (function() {
 
     that.init = init;
     that.connect = connect;
-    that.getAllBeers = getAllBeers;
-    that.getBeerById = getBeerById;
-    that.getBeerByQuery = getBeerByQuery;
-    that.addTagToBeer = addTagToBeer;
-    that.addBeer = addBeer;
-    that.deleteBeerById = deleteBeerById;
+    that.get = get;
     that.isConnected = isConnected;
     return that;
 })();
