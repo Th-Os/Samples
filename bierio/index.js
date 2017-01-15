@@ -76,7 +76,7 @@ app.post("/api/beer/:id/:tag", function(req, res) {
 app.delete("/api/beer/:id", function(req, res) {
     database.get({type: "delete", object: req.params.id}).then(function(beer) {
       if(beer == null) {
-        res.status(400).send({response: "Beer was removed before."});
+        res.status(400).send({response: "Beer is already removed."});
       }else {
         res.status(200).send({
           response: "Beer successfully deleted",

@@ -74,8 +74,13 @@ module.exports = (function() {
     }
 
     function getBeerByQuery(query) {
+      let type = Object.keys(query)[0];
+      let value = query[Object.keys(query)[0]];
+      let obj = {};
+      obj[type] = { $regex: value,
+                    $options: 'i'};
       return new Promise(function(resolve, reject) {
-        Beer.find(query, function(err, beers) {
+        Beer.find(obj , function(err, beers) {
           if(err) {
             reject(err);
           }else {
@@ -87,7 +92,7 @@ module.exports = (function() {
 
     function getBeerById(id) {
       return new Promise(function(resolve, reject) {
-          Beer.find({_id: mongoose.Types-ObjectId(id)}, function(err, beer) {
+          Beer.find({_id: mongoose.Types.ObjectId(id)}, function(err, beer) {
               if(err) {
                   reject(err);
               } else {
