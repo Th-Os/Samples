@@ -1,6 +1,6 @@
 var mongoose = require("mongoose");
 mongoose.Promise = Promise;
-var Beers;
+var Beer;
 
 module.exports = (function() {
     var that = {},
@@ -20,7 +20,7 @@ module.exports = (function() {
             tag: []
         });
 
-        Beers = mongoose.model("Beers", beerSchema);
+        Beer = mongoose.model("Beers", beerSchema);
     }
 
     function connect() {
@@ -63,7 +63,7 @@ module.exports = (function() {
           queryObject = {};
       }
         return new Promise(function(resolve, reject) {
-            Beers.find(queryObject, function(err, beers) {
+            Beer.find(queryObject, function(err, beers) {
                 if(err) {
                     reject(err);
                 } else {
@@ -75,7 +75,7 @@ module.exports = (function() {
 
     function getBeerByQuery(query) {
       return new Promise(function(resolve, reject) {
-        Beers.find(query, function(err, beers) {
+        Beer.find(query, function(err, beers) {
           if(err) {
             reject(err);
           }else {
@@ -87,7 +87,7 @@ module.exports = (function() {
 
     function getBeerById(id) {
       return new Promise(function(resolve, reject) {
-          Beers.find({_id: id}, function(err, beer) {
+          Beer.find({_id: mongoose.Types-ObjectId(id)}, function(err, beer) {
               if(err) {
                   reject(err);
               } else {
@@ -107,13 +107,13 @@ module.exports = (function() {
         beer.manufacturer = object.manufacturer;
       }
       if(object.age != undefined && object.age != null) {
-        beer.age = object.age;
+        beer.age = new Date(object.age);
       }
       if(object.city != undefined && object.city != null) {
         beer.city = object.city;
       }
       return new Promise(function(resolve, reject) {
-        var item = new Beers(beer);
+        var item = new Beer(beer);
         item.save(function(err) {
           if (err) reject();
           else resolve(item);
@@ -124,7 +124,7 @@ module.exports = (function() {
 
     function addTagToBeer(object) {
       return new Promise(function(resolve, reject) {
-          Beers.update({_id: object.id}, {$push: {tag: object.tag}}, function(err, beer) {
+          Beer.update({_id: object.id}, {$push: {tag: object.tag}}, function(err, beer) {
               if(err) {
                   reject(err);
               } else {
@@ -136,7 +136,7 @@ module.exports = (function() {
 
     function deleteBeerById(id) {
       return new Promise(function(resolve, reject) {
-          Beers.findByIdAndRemove(id, function(err, beer) {
+          Beer.findByIdAndRemove(id, function(err, beer) {
               if(err) {
                   reject(err);
               } else {
